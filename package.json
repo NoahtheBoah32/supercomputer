@@ -1,0 +1,13 @@
+{
+  "name": "supercomputer-original",
+  "version": "0.2.0",
+  "private": true,
+  "type": "module",
+  "description": "Original Supercomputer 0.2.0 with Blender integration",
+  "engines": {"node": ">=20"},
+  "scripts": {
+    "setup": "npm ci --prefix app --no-audit --no-fund",
+    "start": "node scripts/start.mjs",
+    "test": "node scripts/smoke.mjs"
+  }
+}

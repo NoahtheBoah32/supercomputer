@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en" data-theme="supacomputa-dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Supercomputer</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%23d1fe17'/%3E%3Cpath d='M16 6c1.2 5.6 4.4 8.8 10 10-5.6 1.2-8.8 4.4-10 10-1.2-5.6-4.4-8.8-10-10 5.6-1.2 8.8-4.4 10-10z' fill='%23131517'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap">
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+
+<!-- Screen 1: Claude login gate -->
+<section id="s-login" class="screen gate on">
+  <div class="gate-card">
+    <div class="gate-logo"><div class="brand-mark" data-logo></div><div class="brand-name">Supercomputer</div></div>
+    <div class="gate-step">Step 1 of 2</div>
+    <h1>Log in to your Claude account first</h1>
+    <p>Supercomputer runs on your own Claude Code login. Nothing leaves this machine except the calls Claude Code itself makes.</p>
+    <div class="gate-panel"><div class="gate-inner">
+      <div class="status-row"><span class="status-dot wait" id="login-dot"></span><div><div id="login-status">Checking Claude Code…</div><div class="status-sub" id="login-sub"></div></div></div>
+      <div class="gate-actions">
+        <button class="btn lime" id="login-open">Log in with Claude <kbd>↵</kbd></button>
+        <button class="btn ghost" id="login-recheck">Check again</button>
+      </div>
+      <div class="gate-error" id="login-error"></div>
+    </div></div>
+    <div class="gate-note"><span data-icon="ask_hand"></span><span>A terminal window opens for the login. Finish it there, then come back here. This page never sees your password.</span></div>
+    <div class="gate-foot" id="login-version"></div>
+  </div>
+</section>
+
+<!-- Screen 2: ElevenLabs key -->
+<section id="s-key" class="screen gate">
+  <div class="gate-card">
+    <div class="gate-logo"><div class="brand-mark" data-logo></div><div class="brand-name">Supercomputer</div></div>
+    <div class="gate-step">Step 2 of 2</div>
+    <h1>Add your generation keys</h1>
+    <p>ElevenLabs, Higgsfield or fal for images; PiAPI for video. Add the ones you have and switch image providers per chat. Keys are stored in your user folder with owner-only permissions, handed to the pipeline as environment variables, never shown again and never sent to this page.</p>
+    <div class="gate-panel"><div class="gate-inner">
+      <div class="key-rows" id="key-rows"></div>
+      <div class="gate-actions">
+        <button class="btn lime" id="key-continue" type="button">Continue <kbd>↵</kbd></button>
+        <button class="btn text" id="key-skip" type="button">Skip for now</button>
+      </div>
+      <div class="gate-error" id="key-error"></div>
+    </div></div>
+    <div class="gate-note"><span data-icon="warning"></span><span>Without an image key the pipeline can plan, but image generation will refuse to run. Video (Seedance) renders through PiAPI, or through the ElevenLabs Image & Video API when that is the key you have; the Docs link above explains the PiAPI key.</span></div>
+  </div>
+</section>
+
+<!-- Screen 3: the app -->
+<section id="s-app" class="screen">
+<div id="app">
+  <aside class="sidebar">
+    <div class="sb-top">
+      <div class="sb-brand"><div class="brand-mark sm" data-logo></div><span>Supercomputer</span><span class="chev" data-icon="h_switcher_chevrons"></span></div>
+      <div class="sb-tools">
+        <button class="icon-btn" id="sb-search" title="Search chats"><span data-icon="h_search"></span></button>
+        <button class="icon-btn" id="sb-collapse" title="Collapse sidebar"><span data-icon="h_collapse"></span></button>
+      </div>
+    </div>
+    <button class="sb-item new" id="sb-new"><span class="chip" data-icon="h_new_chat_plus"></span><span class="grow">New chat</span><kbd>Ctrl ↵</kbd></button>
+    <button class="sb-item" data-page="projects"><span class="chip" data-icon="h_projects"></span><span class="grow">Projects</span></button>
+    <button class="sb-item" data-page="skills"><span class="chip" data-icon="h_skills"></span><span class="grow">Skills</span></button>
+    <button class="sb-item" id="sb-seemore"><span class="chip" data-icon="h_see_more"></span><span class="grow">See more</span></button>
+    <div id="sb-more" hidden>
+      <button class="sb-item" data-page="library"><span class="chip" data-icon="project_folder"></span><span class="grow">Library</span></button>
+      <button class="sb-item" data-page="briefs"><span class="chip" data-icon="viewed_skill"></span><span class="grow">Briefs</span></button>
+      <button class="sb-item" data-page="connections"><span class="chip" data-icon="h_connectors"></span><span class="grow">Connections</span></button>
+    </div>
+    <div class="sb-section" id="sb-pinned-h" hidden><span>Pinned</span></div>
+    <div class="sb-chats" id="sb-pinned" hidden></div>
+    <div class="sb-section"><span>Chats</span><button id="sb-chats-toggle" title="Collapse"><span class="i16" data-icon="h_chats_chevron"></span></button></div>
+    <div class="sb-chats" id="sb-chats"></div>
+    <div class="sb-bottom">
+      <button class="sb-item pricing" id="sb-credits"><span class="chip" data-icon="h_pricing_tag"></span><span class="grow">Credits</span><span class="pill pink" id="sb-credits-pill">…</span></button>
+      <div class="sb-user">
+        <div class="avatar" id="sb-avatar">S</div>
+        <div class="name" id="sb-name">Claude<small id="sb-sub"></small></div>
+        <button class="icon-btn h36" id="sb-settings" title="Settings"><span data-icon="memory"></span></button>
+        <button class="icon-btn h36" id="sb-notif" title="Notifications"><span data-icon="notifications"></span></button>
+      </div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <div class="tb-left">
+        <button class="icon-btn" id="tb-expand" title="Open sidebar" hidden><span data-icon="h_collapse"></span></button>
+        <div class="tb-title" id="tb-title" hidden></div>
+      </div>
+      <div class="tb-right" id="tb-right">
+        <button class="tb-btn progress" id="tb-progress" hidden><span class="progress-ring"></span><span id="tb-progress-txt">0/0</span></button>
+        <button class="tb-btn" id="tb-scheduled" title="Scheduled"><span data-icon="scheduled"></span>Scheduled</button>
+        <button class="tb-btn" id="tb-popout" title="Open the job folder"><span data-icon="popout"></span>Pop out</button>
+        <button class="tb-btn" id="tb-usage" title="Usage"><span data-icon="usage"></span>Usage</button>
+        <button class="credits-pill" id="tb-credits" title="ElevenLabs credits"><span data-icon="h_credits_coin"></span><span id="tb-credits-txt">—</span><span class="bar"><i id="tb-credits-bar"></i></span></button>
+        <button class="tb-btn filled icon" id="tb-cv" title="Content viewer"><span data-icon="content_viewer"></span></button>
+      </div>
+    </div>
+
+    <!-- Home -->
+    <div class="view home on" id="v-home">
+      <div class="home-inner">
+        <div class="home-hero"><div class="brand-mark lg" data-logo></div><h1 id="home-title">What are we creating today?</h1></div>
+        <div class="composer-wrap"><div class="composer" id="home-composer">
+          <div class="attach-row" id="home-attach" hidden></div>
+          <div class="editor tw" id="home-editor" contenteditable="true" data-placeholder="Ask Supercomputer anything" data-tw=""></div>
+          <div class="composer-row">
+            <button class="plus-btn" id="home-plus" title="Add"><span data-icon="plus"></span></button>
+            <span class="spacer"></span>
+            <button class="trigger" id="home-model"><span class="lead" data-icon="generation"></span><span class="mtxt">Auto</span><span class="chev" data-icon="chevron_down"></span></button>
+            <button class="trigger secondary" id="home-provider" title="Generation provider for this chat"><span class="lead" data-icon="h_credits_coin"></span><span class="mtxt">ElevenLabs</span><span class="chev" data-icon="chevron_down"></span></button>
+            <button class="trigger secondary" id="home-mode"><span class="lead" data-icon="ask_hand"></span><span class="mtxt">Ask</span><span class="chev" data-icon="chevron_down"></span></button>
+            <button class="send-btn" id="home-send" disabled title="Send"><span data-icon="send"></span></button>
+          </div>
+        </div></div>
+        <div class="tabs" id="home-tabs">
+          <button class="tab active" data-tab="all"><span data-icon="h_tab_all"></span>All</button>
+          <button class="tab" data-tab="jobs"><span data-icon="project_folder"></span>Jobs</button>
+          <button class="tab" data-tab="briefs"><span data-icon="viewed_skill"></span>Briefs</button>
+          <button class="tab" data-tab="skills"><span data-icon="h_skills"></span>Skills</button>
+        </div>
+        <div class="cards" id="home-cards"></div>
+      </div>
+    </div>
+
+    <!-- Chat -->
+    <div class="view chat" id="v-chat">
+      <div class="chat-scroll" id="chat-scroll"><div class="chat-col" id="chat-col"></div></div>
+      <button class="scroll-down" id="scroll-down" title="Scroll to bottom"><span data-icon="chevron_down"></span></button>
+      <div class="chat-bottom">
+        <div class="chat-composer" id="chat-composer">
+          <div class="attach-row" id="chat-attach" hidden></div>
+          <div class="editor" id="chat-editor" contenteditable="true" data-placeholder="Ask Supercomputer anything"></div>
+          <div class="composer-row">
+            <button class="plus-btn" id="chat-plus" title="Add"><span data-icon="plus"></span></button>
+            <span class="spacer"></span>
+            <button class="trigger" id="chat-model"><span class="lead" data-icon="generation"></span><span class="mtxt">Auto</span><span class="chev" data-icon="chevron_down"></span></button>
+            <button class="trigger secondary" id="chat-provider" title="Generation provider for this chat"><span class="lead" data-icon="h_credits_coin"></span><span class="mtxt">ElevenLabs</span><span class="chev" data-icon="chevron_down"></span></button>
+            <button class="trigger secondary" id="chat-mode"><span class="lead" data-icon="ask_hand"></span><span class="mtxt">Ask</span><span class="chev" data-icon="chevron_down"></span></button>
+            <button class="send-btn" id="chat-send" disabled title="Send"><span data-icon="send"></span></button>
+          </div>
+        </div>
+        <div class="chat-foot" id="chat-foot">LLMs can make mistakes and calls cost credits</div>
+      </div>
+    </div>
+
+    <!-- Skills / Projects / Library / Briefs -->
+    <div class="view page grid-bg" id="v-page"><div class="page-inner" id="page-inner"></div></div>
+
+    <!-- Content viewer -->
+    <aside class="cv" id="cv">
+      <div class="cv-resize" id="cv-resize" title="Drag to resize"></div>
+      <div class="cv-head">
+        <div class="ttl">Generate in <button class="trigger" id="cv-job"><span class="mtxt">Chat History</span><span class="chev" data-icon="swap_vertical"></span></button></div>
+        <button class="hb" id="cv-filter"><span data-icon="filter"></span>Filter</button>
+        <button class="hb" id="cv-view"><span data-icon="view_grid"></span>View</button>
+        <button class="icon-btn" id="cv-close" title="Close"><span data-icon="close_x"></span></button>
+      </div>
+      <div class="cv-modes" id="cv-modes"></div>
+      <div class="cv-tabs" id="cv-tabs"></div>
+      <div class="cv-body" id="cv-body"></div>
+    </aside>
+  </main>
+</div>
+</section>
+
+<div class="lightbox" id="lightbox"><button class="icon-btn x" id="lb-close"><span data-icon="close_x"></span></button><div id="lb-media"></div><div class="cap" id="lb-cap"></div></div>
+<div class="modal-bg top" id="search"><div class="modal search"><div class="search-field"><span data-icon="search"></span><input id="search-input" placeholder="Search chats, projects and briefs" autocomplete="off" spellcheck="false"><kbd>Esc</kbd></div><div class="search-list" id="search-list"></div></div></div>
+<div class="modal-bg" id="settings"><div class="modal"><div class="in" id="settings-in"></div></div></div>
+<div class="modal-bg" id="docs"><div class="modal docs"><div class="in" id="docs-in"></div></div></div>
+<div class="toasts" id="toasts"></div>
+<input type="file" id="file-input" multiple hidden accept="image/*,video/*,.txt,.md,.pdf">
+<input type="file" id="skill-file" hidden accept=".md,.txt">
+
+<script type="module" src="app.js"></script>
+</body>
+</html>

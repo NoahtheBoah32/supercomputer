@@ -1,0 +1,7 @@
+[extend]
+useDefault = true
+
+[[allowlists]]
+description = "Literal public placeholder in the original PiAPI curl help example"
+regexTarget = "match"
+regexes = ['''x-api-key: paste-your-key-here''']
